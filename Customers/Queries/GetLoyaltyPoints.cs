@@ -49,7 +49,7 @@ namespace crms2.Customers.Queries
 
                 /*
                  * Example: 
-                 * Customer 16 Has a total of 2932.23 dollars spent. This yields 292 loyalty points
+                 * Customer 16 Has a total of 2932.23 dollars spent. This yields 293 loyalty points
                  * Customer 16 also has 59 total orders. That would be 50 extra loyalty points.
                  */ 
                 int totalQuant = purchases.Sum(p => p.Quantity) / 10;
