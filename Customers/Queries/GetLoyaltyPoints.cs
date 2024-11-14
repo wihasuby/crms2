@@ -64,9 +64,6 @@ namespace crms2.Customers.Queries
 
                 }
 
-
-
-
             }
             return customers;
         }

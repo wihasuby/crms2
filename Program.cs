@@ -3,6 +3,7 @@ using crms2.Customers.Commands;
 using crms2.Customers.Queries;
 using crms2.PurchaseHistory.Commands;
 using crms2.PurchaseHistory.Queries;
+using crms2.Reports.Queries;
 using Microsoft.Data.Sqlite;
 using System.Data;
 
@@ -16,7 +17,7 @@ namespace crms2
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllersWithViews();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -24,15 +25,12 @@ namespace crms2
             builder.Services.AddTransient<IDbConnection>(sp => new SqliteConnection("Data Source=C:\\database\\crms.db"));
 
             builder.Services.AddTransient<GetAllCustomers>();
+            builder.Services.AddTransient<GetMonthlyReport>();
             builder.Services.AddTransient<GetLoyaltyPoints>();
             builder.Services.AddTransient<LoadCustomer>();
             builder.Services.AddTransient<LoadCustomerFile>();
             builder.Services.AddTransient<LoadPurchaseHistoryFile>();
             builder.Services.AddTransient<GetAllPurchases>();
-
-
-
-
 
 
 
@@ -64,6 +62,8 @@ namespace crms2
                 app.UseHttpsRedirection();
                 app.UseAuthorization();
                 app.MapControllers();
+                app.MapDefaultControllerRoute();
+
 
                 app.Run();
             }
