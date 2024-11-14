@@ -2,19 +2,24 @@
 using Dapper;
 using System.Data;
 
-public class GetAllCustomers
+namespace crms2.Customers.Queries
 {
-    private readonly IDbConnection _dbConnection;
-
-    public GetAllCustomers(IDbConnection dbConnection)
+    public class GetAllCustomers
     {
-        _dbConnection = dbConnection;
-    }
+        private readonly IDbConnection _dbConnection;
 
-    public async Task<IEnumerable<CustomerModel>> ExecuteAsync()
-    {
-        string sql = "SELECT * FROM customers";
-        return await _dbConnection.QueryAsync<CustomerModel>(sql);
-    }
+        public GetAllCustomers(IDbConnection dbConnection)
+        {
+            _dbConnection = dbConnection;
+        }
 
+        public async Task<IEnumerable<CustomerModel>> ExecuteAsync()
+        {
+            string sql = "SELECT * FROM customers";
+            return await _dbConnection.QueryAsync<CustomerModel>(sql);
+        }
+
+    }
 }
+
+

@@ -5,8 +5,8 @@ namespace crms2.Customers.Models
 {
     public class CustomerModel
     {
-        //[Key]
-        //public int Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
@@ -25,5 +25,7 @@ namespace crms2.Customers.Models
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public int LoyaltyPoints { get; set; } = 0;
     }
 }

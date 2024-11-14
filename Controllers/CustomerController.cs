@@ -1,5 +1,6 @@
 ﻿using crms2.Customers.Commands;
 using crms2.Customers.Models;
+using crms2.Customers.Queries;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Dapper;
@@ -12,6 +13,7 @@ namespace crsms.Controllers
         private readonly GetAllCustomers _getAllCustomers;
         private readonly LoadCustomer _loadCustomer;
         private readonly LoadCustomerFile _loadCustomerFile;
+        private readonly GetLoyaltyPoints _getLoyaltyPoints;
 
         public CustomersController(GetAllCustomers getAllCustomers, LoadCustomer loadCustomer, LoadCustomerFile loadfile)
         {
@@ -19,6 +21,8 @@ namespace crsms.Controllers
             _loadCustomer = loadCustomer;
             _loadCustomerFile = loadfile;
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()

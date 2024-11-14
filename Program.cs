@@ -1,5 +1,6 @@
 
 using crms2.Customers.Commands;
+using crms2.Customers.Queries;
 using crms2.PurchaseHistory.Commands;
 using crms2.PurchaseHistory.Queries;
 using Microsoft.Data.Sqlite;
@@ -23,6 +24,7 @@ namespace crms2
             builder.Services.AddTransient<IDbConnection>(sp => new SqliteConnection("Data Source=C:\\database\\crms.db"));
 
             builder.Services.AddTransient<GetAllCustomers>();
+            builder.Services.AddTransient<GetLoyaltyPoints>();
             builder.Services.AddTransient<LoadCustomer>();
             builder.Services.AddTransient<LoadCustomerFile>();
             builder.Services.AddTransient<LoadPurchaseHistoryFile>();

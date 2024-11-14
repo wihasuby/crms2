@@ -5,6 +5,9 @@ namespace crms2.PurchaseHistory.Models
 {
     public class PurchaseHistoryModel
     {
+        [Key]
+        public int Id { get; set; }
+
         [Required]
         public int CustomerId { get; set; } // Foreign key reference to the Customers table
 
