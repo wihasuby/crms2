@@ -11,15 +11,15 @@ namespace crms2.Customers.Models
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")]
         [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name can only contain alphabetic characters.")]
-        public string? name { get; set; }
+        public string? Name { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email format.")]
-        public string? email { get; set; }
+        public string? Email { get; set; }
 
         [Required(ErrorMessage = "Phone number is required.")]
         [RegularExpression(@"^\d{3}-\d{3}-\d{4}$", ErrorMessage = "Phone number must be in the format XXX-XXX-XXXX.")]
-        public string? phone_number { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Created date is required.")]
         [DataType(DataType.Date)]

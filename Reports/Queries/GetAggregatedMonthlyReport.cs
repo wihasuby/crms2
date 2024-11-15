@@ -4,20 +4,20 @@ using crms2.Reports.Models;
 using Dapper;
 using Microsoft.AspNetCore.Http.Extensions;
 
-namespace crms2.Reports.Queries
+namespace crms2.Reports
 {
-    public class GetMonthlyReport
+    public class GetAggregatedMonthlyReport
     {
         private readonly IDbConnection _dbConnection;
 
-        public GetMonthlyReport(IDbConnection dbConnection)
+        public GetAggregatedMonthlyReport(IDbConnection dbConnection)
         {
             _dbConnection = dbConnection;
         }
 
-        public async Task<IEnumerable<MonthlyReportModel>> ExecuteAsync()
+        public async Task<IEnumerable<AggregatedMonthlyReportModel>> ExecuteAsync()
         {
-            var report = await _dbConnection.QueryAsync<MonthlyReportModel>(BuildQuery());
+            var report = await _dbConnection.QueryAsync<AggregatedMonthlyReportModel>(BuildQuery());
 
             return report;
         }
@@ -26,7 +26,7 @@ namespace crms2.Reports.Queries
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine("SELECT * FROM MonthlyCustomerReport");
+            sb.AppendLine("SELECT * FROM AggregatedMonthlyCustomerReport");
 
             return sb.ToString();
         }

@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<crms2.Reports.Models.MonthlyReportModel>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,46 +11,98 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .table-container {
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: auto;
+            max-height: 400px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 14px;
         }
 
         th, td {
-            padding: 10px;
+            padding: 8px 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
 
         th {
             background-color: #f2f2f2;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .compact {
+            padding: 5px 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Monthly Customer Report</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Year</th>
-                <th>Month</th>
-                <th>Average Spend</th>
-                <th>Total Loyalty Points</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <h1 style="text-align: center;">Monthly Customer Report</h1>
+
+    <!-- Monthly Report Table -->
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
-                    <td>@item.Year</td>
-                    <td>@item.Month</td>
-                    <td>@item.AverageSpend.ToString("C")</td>
-                    <td>@item.TotalLoyaltyPoints</td>
+                    <th>Year</th>
+                    <th>Month</th>
+                    <th>Average Spend</th>
+                    <th>Total Loyalty Points</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="compact">@item.Year</td>
+                        <td class="compact">@item.Month</td>
+                        <td class="compact">@item.AverageSpend.ToString("C")</td>
+                        <td class="compact">@item.TotalLoyaltyPoints</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @* <!-- Aggregated Monthly Report Table -->
+    <div class="table-container">
+        <h2 style="text-align: center;">Aggregated Monthly Report</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Month</th>
+                    <th>Total Average Spend</th>
+                    <th>Total Loyalty Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.AggregatedReports)
+                {
+                    <tr>
+                        <td class="compact">@item.Year</td>
+                        <td class="compact">@item.Month</td>
+                        <td class="compact">@item.TotalAverageSpend.ToString("C")</td>
+                        <td class="compact">@item.TotalLoyaltyPoints</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div> *@
 </body>
 </html>
