@@ -22,8 +22,9 @@ namespace crms2
 
             // Register SQLite connection
             // Use a relative path for the SQLite database file
-            var databasePath = Path.Combine(AppContext.BaseDirectory, "crms.db");
+            var databasePath = Path.Combine(Directory.GetCurrentDirectory(), "crms.db"); 
             builder.Services.AddTransient<IDbConnection>(sp => new SqliteConnection($"Data Source={databasePath}"));
+            Console.WriteLine($"Database path: {databasePath}");
 
             // Register application services
             builder.Services.AddTransient<GetAllCustomers>();
