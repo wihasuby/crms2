@@ -34,6 +34,9 @@ namespace crms2
             builder.Services.AddTransient<GetAllPurchases>();
             builder.Services.AddTransient<GetFilteredCustomers>();
 
+            
+
+
             var app = builder.Build();
 
             // Seed the database with the CSV file
@@ -48,6 +51,11 @@ namespace crms2
             {
                 Console.WriteLine($"Error during database seeding: {ex.Message}");
                 throw;
+            }
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
             }
 
             try
@@ -67,7 +75,10 @@ namespace crms2
                 // Map controllers and Razor Pages
                 app.MapControllers();
                 app.MapRazorPages(); // Ensure this line is present
-                app.MapDefaultControllerRoute();
+                //app.MapDefaultControllerRoute();
+                app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
                 // Run the application
                 app.Run();

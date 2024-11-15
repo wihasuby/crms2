@@ -1,0 +1,96 @@
+﻿@{
+    ViewData["Title"] = "Upload CSV File";
+}
+
+<style>
+    .upload-container {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 20px;
+        text-align: center;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .upload-button {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: #fff;
+        background-color: #2c3e50;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .upload-button:hover {
+            background-color: #34495e;
+        }
+
+    .message {
+        margin-top: 20px;
+        color: #2c3e50;
+    }
+</style>
+
+<div class="upload-container">
+    <h2>Upload CSV File</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" accept=".csv" required />
+        <button type="button" class="upload-button" onclick="uploadAndProcessFile()">Upload and Process</button>
+    </form>
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+    async function uploadAndProcessFile() {
+        const fileInput = document.getElementById('fileInput');
+        const messageDiv = document.getElementById('message');
+
+        if (fileInput.files.length === 0) {
+            messageDiv.textContent = "Please select a file to upload.";
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            // Step 1: Upload the file
+            const uploadResponse = await fetch('/Upload/UploadFile', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!uploadResponse.ok) {
+                const error = await uploadResponse.text();
+                messageDiv.textContent = `File upload failed: ${error}`;
+                return;
+            }
+
+            // Step 2: Determine API endpoint based on file name
+            const fileName = file.name;
+            const apiUrl = `/api/customers/load-file?filepath=wwwroot/uploads/${fileName}`;
+
+            // Step 3: Call the combined API endpoint
+            const apiResponse = await fetch(apiUrl, {
+                method: 'POST'
+            });
+
+            if (!apiResponse.ok) {
+                const error = await apiResponse.text();
+                messageDiv.textContent = `Error processing file: ${error}`;
+                return;
+            }
+
+            const result = await apiResponse.json();
+            messageDiv.textContent = `File processed successfully. Number of records loaded: ${result.length}`;
+        } catch (error) {
+            messageDiv.textContent = `An error occurred: ${error.message}`;
+        }
+    }
+</script>
