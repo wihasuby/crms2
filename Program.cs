@@ -25,7 +25,7 @@ namespace crms2
 
             // Register application services
             builder.Services.AddTransient<GetAllCustomers>();
-            builder.Services.AddTransient<GetCustomerSpending>();
+            builder.Services.AddTransient<GetCustomerWithFilter>();
             builder.Services.AddTransient<GetMonthlyReport>();
             builder.Services.AddTransient<GetLoyaltyPoints>();
             builder.Services.AddTransient<LoadCustomer>();

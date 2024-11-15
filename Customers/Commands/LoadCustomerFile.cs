@@ -20,7 +20,7 @@ namespace crms2.Customers.Commands
             _logger = logger;   
         }
 
-        public async Task<(IEnumerable<CustomerModel> ValidCustomers, IEnumerable<CustomerModel> InvalidCustomers)> ExecuteAsync(string filePath)
+        public async Task<IEnumerable<CustomerModel>> ExecuteAsync(string filePath)
         {
             IEnumerable<CustomerModel> inputData;
             var validCustomers = new List<CustomerModel>();
@@ -73,7 +73,7 @@ namespace crms2.Customers.Commands
             }
 
             // Return both valid and invalid customers for reporting
-            return (ValidCustomers: validCustomers, InvalidCustomers: invalidCustomers);
+            return validCustomers;
         }
 
         // Method to manually validate the CustomerModel

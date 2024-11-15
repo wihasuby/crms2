@@ -5,11 +5,11 @@ using System.Text;
 
 namespace crms2.Customers.Queries
 {
-    public class GetCustomerSpending
+    public class GetCustomerWithFilter
     {
         private readonly IDbConnection _dbConnection;
 
-        public GetCustomerSpending(IDbConnection dbConnection)
+        public GetCustomerWithFilter(IDbConnection dbConnection)
         {
             _dbConnection = dbConnection;
         }
@@ -23,7 +23,7 @@ namespace crms2.Customers.Queries
             try
             {
                 // Execute the query with parameters
-                var result = await _dbConnection.QueryAsync<CustomerModel>(BuildQuery(), parameters);
+                var result = await _dbConnection.QueryAsync<CustomerModel>(BuildQuery(nameFilter), parameters);
                 Console.WriteLine($"Query Result Count: {result.Count()}");
 
                 // Log the results for debugging
@@ -41,7 +41,7 @@ namespace crms2.Customers.Queries
             }
         }
 
-        public string BuildQuery()
+        public string BuildQuery(string filter)
         {
             var sb = new StringBuilder();
             sb.AppendLine("SELECT");
@@ -49,11 +49,10 @@ namespace crms2.Customers.Queries
             sb.AppendLine("    c.Name,");
             sb.AppendLine("    c.Email,");
             sb.AppendLine("    c.phone_number AS PhoneNumber,");
-            sb.AppendLine("    c.CreatedAt,");
-            sb.AppendLine("    COALESCE(SUM(ph.Total), 0) AS TotalSpending");
+            sb.AppendLine("    c.CreatedAt");
             sb.AppendLine("FROM Customers c");
             sb.AppendLine("LEFT JOIN purchase_history ph ON c.Id = ph.CustomerId");
-            sb.AppendLine("WHERE c.Name LIKE @NameFilter");
+            sb.AppendLine($"WHERE c.Name LIKE '{filter}%'");
             sb.AppendLine("GROUP BY c.Id, c.Name, c.Email, c.phone_number, c.CreatedAt");
             sb.AppendLine("ORDER BY c.Name ASC;");
             return sb.ToString();

@@ -16,19 +16,19 @@ namespace crsms.Controllers
         private readonly LoadCustomerFile _loadCustomerFile;
         private readonly GetLoyaltyPoints _getLoyaltyPoints;
         private readonly GetFilteredCustomers _getFilteredCustomers;
-        private readonly GetCustomerSpending _getCustomerSpending;
+        private readonly GetCustomerWithFilter _GetCustomerWithFilter;
 
         public CustomersController(
             GetAllCustomers getAllCustomers,
             LoadCustomer loadCustomer,
             LoadCustomerFile loadfile,
-            GetCustomerSpending getCustomerSpending,
+            GetCustomerWithFilter GetCustomerWithFilter,
             GetFilteredCustomers getFilteredCustomers)
         {
             _getAllCustomers = getAllCustomers;
             _loadCustomer = loadCustomer;
             _loadCustomerFile = loadfile;
-            _getCustomerSpending = getCustomerSpending;
+            _GetCustomerWithFilter = GetCustomerWithFilter;
             _getFilteredCustomers = getFilteredCustomers;
         }
 
@@ -40,8 +40,8 @@ namespace crsms.Controllers
             {
                 Console.WriteLine($"Search request with name filter: {name}");
 
-                // Call the GetCustomerSpending query to fetch filtered results
-                var customers = await _getCustomerSpending.ExecuteAsync(name);
+                // Call the GetCustomerWithFilter query to fetch filtered results
+                var customers = await _GetCustomerWithFilter.ExecuteAsync(name);
 
                 if (customers == null || !customers.Any())
                 {

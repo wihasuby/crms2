@@ -8,9 +8,9 @@ namespace crms2.Views.Report
     {
         public IEnumerable<CustomerModel> CustomerData { get; set; }
 
-        public async Task OnGetAsync(string filter, GetCustomerSpending getCustomerSpending)
+        public async Task OnGetAsync(string filter, GetCustomerWithFilter GetCustomerWithFilter)
         {
-            CustomerData = await getCustomerSpending.ExecuteAsync(filter);
+            CustomerData = await GetCustomerWithFilter.ExecuteAsync(filter);
         }
     }
 }

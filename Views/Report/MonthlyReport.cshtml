@@ -78,31 +78,5 @@
             </tbody>
         </table>
     </div>
-
-    @* <!-- Aggregated Monthly Report Table -->
-    <div class="table-container">
-        <h2 style="text-align: center;">Aggregated Monthly Report</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Year</th>
-                    <th>Month</th>
-                    <th>Total Average Spend</th>
-                    <th>Total Loyalty Points</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.AggregatedReports)
-                {
-                    <tr>
-                        <td class="compact">@item.Year</td>
-                        <td class="compact">@item.Month</td>
-                        <td class="compact">@item.TotalAverageSpend.ToString("C")</td>
-                        <td class="compact">@item.TotalLoyaltyPoints</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div> *@
 </body>
 </html>

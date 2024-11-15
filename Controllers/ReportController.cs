@@ -9,12 +9,12 @@ namespace crms2.Controllers
     public class ReportController : Controller
     {
         private readonly GetMonthlyReport _getMonthlyReport;
-        private readonly GetCustomerSpending _getCustomerSpending;
+        private readonly GetCustomerWithFilter _GetCustomerWithFilter;
 
-        public ReportController(GetMonthlyReport getMonthlyReport, GetCustomerSpending getCustomerSpending)
+        public ReportController(GetMonthlyReport getMonthlyReport, GetCustomerWithFilter GetCustomerWithFilter)
         {
             _getMonthlyReport = getMonthlyReport;
-            _getCustomerSpending = getCustomerSpending;
+            _GetCustomerWithFilter = GetCustomerWithFilter;
         }
 
         // API endpoint that returns JSON
@@ -36,7 +36,7 @@ namespace crms2.Controllers
         [HttpGet("Customers")]
         public async Task<IActionResult> Customers(string filter)
         {
-            var customerData = await _getCustomerSpending.ExecuteAsync(filter);
+            var customerData = await _GetCustomerWithFilter.ExecuteAsync(filter);
             return View("~/Views/Report/Customers.cshtml", customerData);
         }
 
