@@ -5,7 +5,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
+
+
+
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.0.1" />
@@ -14,5 +18,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
+
 
 </Project>
