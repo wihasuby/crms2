@@ -27,5 +27,7 @@ namespace crms2.Customers.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public int LoyaltyPoints { get; set; } = 0;
+
+        public decimal TotalSpending { get; set; }
     }
 }

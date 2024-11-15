@@ -14,16 +14,30 @@ namespace crsms.Controllers
         private readonly LoadCustomer _loadCustomer;
         private readonly LoadCustomerFile _loadCustomerFile;
         private readonly GetLoyaltyPoints _getLoyaltyPoints;
+        private readonly GetFilteredCustomers _getFilteredCustomers;
 
-        public CustomersController(GetAllCustomers getAllCustomers, LoadCustomer loadCustomer, LoadCustomerFile loadfile)
+        public CustomersController(GetAllCustomers getAllCustomers, LoadCustomer loadCustomer, LoadCustomerFile loadfile, GetFilteredCustomers getFilteredCustomers)
         {
             _getAllCustomers = getAllCustomers;
             _loadCustomer = loadCustomer;
             _loadCustomerFile = loadfile;
+            _getFilteredCustomers = getFilteredCustomers;
         }
 
 
-
+        [HttpGet("filtered")]
+        public async Task<IActionResult> GetFilteredCustomers([FromQuery] decimal? SpendingThreshold)
+        {
+            try
+            {
+                var customers = await _getFilteredCustomers.ExecuteAsync(SpendingThreshold);
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()
         {

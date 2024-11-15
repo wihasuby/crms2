@@ -31,6 +31,7 @@ namespace crms2
             builder.Services.AddTransient<LoadCustomerFile>();
             builder.Services.AddTransient<LoadPurchaseHistoryFile>();
             builder.Services.AddTransient<GetAllPurchases>();
+            builder.Services.AddTransient<GetFilteredCustomers>();
 
 
 

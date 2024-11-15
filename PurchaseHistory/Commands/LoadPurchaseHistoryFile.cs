@@ -55,7 +55,7 @@ namespace crms2.PurchaseHistory.Commands
                         continue;
                     }
 
-                    // Lookup CustomerId using the customer's email
+                    // Lookup CustomerId using the customer's email Requirement 2.4
                     var customerQuery = "SELECT Id FROM Customers WHERE LOWER(Email) = LOWER(@Email)";
                     var customerId = await _dbConnection.QuerySingleOrDefaultAsync<int>(customerQuery, new { Email = purchase.CustomerEmail });
 
