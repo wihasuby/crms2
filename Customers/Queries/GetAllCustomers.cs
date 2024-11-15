@@ -1,6 +1,7 @@
 ﻿using crms2.Customers.Models;
 using Dapper;
 using System.Data;
+using System.Text;
 
 namespace crms2.Customers.Queries
 {
@@ -15,8 +16,27 @@ namespace crms2.Customers.Queries
 
         public async Task<IEnumerable<CustomerModel>> ExecuteAsync()
         {
-            string sql = "SELECT * FROM customers";
-            return await _dbConnection.QueryAsync<CustomerModel>(sql);
+            return await _dbConnection.QueryAsync<CustomerModel>(BuildQuery());
+        }
+
+        public string BuildQuery()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("SELECT");
+            sb.AppendLine("    c.Id,");
+            sb.AppendLine("    c.Name,");
+            sb.AppendLine("    c.Email,");
+            sb.AppendLine("    c.phone_number AS PhoneNumber,");
+            sb.AppendLine("    c.CreatedAt,");
+            sb.AppendLine("    COALESCE(SUM(ph.Total), 0) AS TotalSpending");
+            sb.AppendLine("FROM Customers c");
+            sb.AppendLine("LEFT JOIN purchase_history ph ON c.Id = ph.CustomerId");
+            sb.AppendLine("GROUP BY c.Id, c.Name, c.Email, c.phone_number, c.CreatedAt");
+            sb.AppendLine("ORDER BY TotalSpending ASC;");
+            return sb.ToString();
+
+            return sb.ToString();
         }
 
     }

@@ -61,14 +61,22 @@ namespace crsms.Controllers
         {
             try
             {
+                // Adjust this method to filter by both spending and name
                 var customers = await _getFilteredCustomers.ExecuteAsync(SpendingThreshold);
-                return Ok(customers);
+
+                if (customers == null || !customers.Any())
+                {
+                    return NoContent(); // Return 204 if no customers are found
+                }
+
+                return Ok(customers); // Return filtered customers
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()
