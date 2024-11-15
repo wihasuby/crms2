@@ -21,7 +21,9 @@ namespace crms2
             builder.Services.AddSwaggerGen();
 
             // Register SQLite connection
-            builder.Services.AddTransient<IDbConnection>(sp => new SqliteConnection("Data Source=C:\\database\\crms.db"));
+            // Use a relative path for the SQLite database file
+            var databasePath = Path.Combine(AppContext.BaseDirectory, "crms.db");
+            builder.Services.AddTransient<IDbConnection>(sp => new SqliteConnection($"Data Source={databasePath}"));
 
             // Register application services
             builder.Services.AddTransient<GetAllCustomers>();
