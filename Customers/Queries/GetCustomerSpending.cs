@@ -49,11 +49,12 @@ namespace crms2.Customers.Queries
             sb.AppendLine("    c.Name,");
             sb.AppendLine("    c.Email,");
             sb.AppendLine("    c.phone_number AS PhoneNumber,");
-            sb.AppendLine("    c.CreatedAt");
+            sb.AppendLine("    c.CreatedAt,");
+            sb.AppendLine("    SUM(ph.total) As TotalSpending");
             sb.AppendLine("FROM Customers c");
             sb.AppendLine("LEFT JOIN purchase_history ph ON c.Id = ph.CustomerId");
             sb.AppendLine($"WHERE c.Name LIKE '{filter}%'");
-            sb.AppendLine("GROUP BY c.Id, c.Name, c.Email, c.phone_number, c.CreatedAt");
+            sb.AppendLine("GROUP BY c.Id");
             sb.AppendLine("ORDER BY c.Name ASC;");
             return sb.ToString();
         }

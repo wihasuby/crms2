@@ -1,76 +1,180 @@
-﻿@model IEnumerable<crms2.Customers.Models.CustomerModel>
-@{
-    ViewData["Title"] = "Customers";
-}
-
-<h2>Customers</h2>
-
-<!-- Search Input Fields -->
-<div class="form-group">
-    <input type="text" id="searchInput" placeholder="Search by Name" class="form-control" />
-    <input type="number" id="spendingInput" placeholder="Minimum Total Spending" class="form-control" />
-    <button onclick="searchCustomers()" class="btn btn-primary">Search</button>
-</div>
-
-<!-- Customers Table -->
-<table class="table table-striped" id="customersTable">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone Number</th>
-            <th>Total Spending</th>
-        </tr>
-    </thead>
-    <tbody id="customersBody">
-        <!-- Table rows will be populated dynamically by JavaScript -->
-    </tbody>
-</table>
-
-<!-- JavaScript for Server-Side Search -->
-<script>
-    async function searchCustomers() {
-        const nameFilter = document.getElementById('searchInput').value;
-        const spendingThreshold = document.getElementById('spendingInput').value || 0;
-        const url = `/api/customers/search?name=${encodeURIComponent(nameFilter)}&spendingThreshold=${encodeURIComponent(spendingThreshold)}`;
-
-        try {
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                console.error("Failed to fetch customers.");
-                document.getElementById('customersBody').innerHTML = '<tr><td colspan="4">No customers found.</td></tr>';
-                return;
-            }
-
-            const customers = await response.json();
-            const customersBody = document.getElementById('customersBody');
-            customersBody.innerHTML = ''; // Clear previous results
-
-            if (customers.length === 0) {
-                customersBody.innerHTML = '<tr><td colspan="4">No customers found.</td></tr>';
-                return;
-            }
-
-            // Populate the table with customer data
-            customers.forEach(customer => {
-                const row = `
-                        <tr>
-                            <td>${customer.name}</td>
-                            <td>${customer.email}</td>
-                            <td>${customer.phoneNumber}</td>
-                            <td>${customer.totalSpending.toFixed(2)}</td>
-                        </tr>
-                    `;
-                customersBody.innerHTML += row;
-            });
-        } catch (error) {
-            console.error("Error fetching customers:", error);
-            document.getElementById('customersBody').innerHTML = '<tr><td colspan="4">Error fetching data.</td></tr>';
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0; /* Light gray for uniform background */
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
         }
-    }
 
-    // Trigger search when input changes
-    document.getElementById('searchInput').addEventListener('input', searchCustomers);
-    document.getElementById('spendingInput').addEventListener('input', searchCustomers);
-</script>
+        .container {
+            width: 60%; /* Consistent width with other page */
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 180px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background-color: #0056b3;
+            }
+
+        .table-container {
+            max-height: 400px; /* Added max height for scrollable table */
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: normal;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        th:first-child, td:first-child {
+            text-align: left;
+            width: 25%;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 35%;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 20%;
+        }
+
+        th:last-child, td:last-child {
+            width: 20%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Customers</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search by Name">
+            <input type="number" id="spendingInput" placeholder="Minimum Total Spending">
+        </div>
+        <div class="table-container">
+            <table id="customersTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Total Spending</th>
+                    </tr>
+                </thead>
+                <tbody id="customersBody">
+                    <!-- Table rows will be populated dynamically by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript for Server-Side Search -->
+    <script>
+        async function searchCustomers() {
+            const nameFilter = document.getElementById('searchInput').value;
+            const spendingThreshold = document.getElementById('spendingInput').value || 0;
+            const url = `/api/customers/search?name=${encodeURIComponent(nameFilter)}&spendingThreshold=${encodeURIComponent(spendingThreshold)}`;
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    console.error("Failed to fetch customers.");
+                    document.getElementById('customersBody').innerHTML = '<tr><td colspan="4">No customers found.</td></tr>';
+                    return;
+                }
+
+                const customers = await response.json();
+                const customersBody = document.getElementById('customersBody');
+                customersBody.innerHTML = ''; // Clear previous results
+
+                if (customers.length === 0) {
+                    customersBody.innerHTML = '<tr><td colspan="4">No customers found.</td></tr>';
+                    return;
+                }
+
+                // Populate the table with customer data
+                customers.forEach(customer => {
+                    const row = `
+                                <tr>
+                                    <td>${customer.name}</td>
+                                    <td>${customer.email}</td>
+                                    <td>${customer.phoneNumber}</td>
+                                    <td>${customer.totalSpending.toFixed(2)}</td>
+                                </tr>
+                            `;
+                    customersBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Error fetching customers:", error);
+                document.getElementById('customersBody').innerHTML = '<tr><td colspan="4">Error fetching data.</td></tr>';
+            }
+        }
+
+        // Trigger search when input changes
+        document.getElementById('searchInput').addEventListener('input', searchCustomers);
+        document.getElementById('spendingInput').addEventListener('input', searchCustomers);
+
+        // Initial load of customers
+        searchCustomers();
+    </script>
+</body>
+</html>
