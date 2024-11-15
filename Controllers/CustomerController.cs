@@ -4,7 +4,7 @@ using crms2.Customers.Queries;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Dapper;
-using System.Data.Common;
+
 namespace crsms.Controllers
 {
     [ApiController]
@@ -18,15 +18,44 @@ namespace crsms.Controllers
         private readonly GetFilteredCustomers _getFilteredCustomers;
         private readonly GetCustomerSpending _getCustomerSpending;
 
-
-        public CustomersController(GetAllCustomers getAllCustomers, LoadCustomer loadCustomer, LoadCustomerFile loadfile, GetCustomerSpending getCustomerSpending)
+        public CustomersController(
+            GetAllCustomers getAllCustomers,
+            LoadCustomer loadCustomer,
+            LoadCustomerFile loadfile,
+            GetCustomerSpending getCustomerSpending,
+            GetFilteredCustomers getFilteredCustomers)
         {
             _getAllCustomers = getAllCustomers;
             _loadCustomer = loadCustomer;
             _loadCustomerFile = loadfile;
             _getCustomerSpending = getCustomerSpending;
+            _getFilteredCustomers = getFilteredCustomers;
         }
 
+        // New API Endpoint for searching customers by name
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchCustomers([FromQuery] string name = "")
+        {
+            try
+            {
+                Console.WriteLine($"Search request with name filter: {name}");
+
+                // Call the GetCustomerSpending query to fetch filtered results
+                var customers = await _getCustomerSpending.ExecuteAsync(name);
+
+                if (customers == null || !customers.Any())
+                {
+                    return NotFound("No customers found matching the search criteria.");
+                }
+
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Internal server error: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
         [HttpGet("filtered")]
         public async Task<IActionResult> GetFilteredCustomers([FromQuery] decimal SpendingThreshold)
@@ -42,7 +71,6 @@ namespace crsms.Controllers
             }
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()
         {
@@ -50,7 +78,6 @@ namespace crsms.Controllers
             return Ok(customers);
         }
 
-        // POST: /api/customers/load-from-csv?filepath=customers.csv
         [HttpPost("load-from-csv")]
         public async Task<IActionResult> LoadCustomersFromCsv([FromQuery] string filepath)
         {
@@ -67,7 +94,6 @@ namespace crsms.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-
 
         [HttpPost("create")]
         public async Task<IActionResult> CreateCustomer([FromBody] CustomerModel customer)

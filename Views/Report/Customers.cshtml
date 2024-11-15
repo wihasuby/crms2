@@ -5,9 +5,11 @@
 
 <h2>Customers</h2>
 
-<!-- Search Input -->
+<!-- Search Input Fields -->
 <div class="form-group">
-    <input type="text" id="searchInput" placeholder="Search by Name" class="form-control" onkeyup="filterCustomers()" />
+    <input type="text" id="searchInput" placeholder="Search by Name" class="form-control" />
+    <input type="number" id="spendingInput" placeholder="Minimum Total Spending" class="form-control" />
+    <button onclick="searchCustomers()" class="btn btn-primary">Search</button>
 </div>
 
 <!-- Customers Table -->
@@ -21,36 +23,54 @@
         </tr>
     </thead>
     <tbody id="customersBody">
-        @foreach (var customer in Model)
-        {
-            <tr>
-                <td class="customer-name">@customer.Name</td>
-                <td>@customer.Email</td>
-                <td>@customer.PhoneNumber</td>
-                <td>@customer.TotalSpending.ToString("C")</td>
-            </tr>
-        }
+        <!-- Table rows will be populated dynamically by JavaScript -->
     </tbody>
 </table>
 
-<!-- JavaScript for Client-Side Filtering -->
+<!-- JavaScript for Server-Side Search -->
 <script>
-    function filterCustomers() {
-        const input = document.getElementById('searchInput').value.toLowerCase();
-        const table = document.getElementById('customersTable');
-        const rows = table.getElementsByTagName('tr');
+    async function searchCustomers() {
+        const nameFilter = document.getElementById('searchInput').value;
+        const spendingThreshold = document.getElementById('spendingInput').value || 0;
+        const url = `/api/customers/search?name=${encodeURIComponent(nameFilter)}&spendingThreshold=${encodeURIComponent(spendingThreshold)}`;
 
-        // Loop through all rows and hide those that don't match the search query
-        for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the table header
-            const nameCell = rows[i].getElementsByClassName('customer-name')[0];
-            if (nameCell) {
-                const name = nameCell.textContent || nameCell.innerText;
-                if (name.toLowerCase().indexOf(input) > -1) {
-                    rows[i].style.display = ''; // Show row
-                } else {
-                    rows[i].style.display = 'none'; // Hide row
-                }
+        try {
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                console.error("Failed to fetch customers.");
+                document.getElementById('customersBody').innerHTML = '<tr><td colspan="4">No customers found.</td></tr>';
+                return;
             }
+
+            const customers = await response.json();
+            const customersBody = document.getElementById('customersBody');
+            customersBody.innerHTML = ''; // Clear previous results
+
+            if (customers.length === 0) {
+                customersBody.innerHTML = '<tr><td colspan="4">No customers found.</td></tr>';
+                return;
+            }
+
+            // Populate the table with customer data
+            customers.forEach(customer => {
+                const row = `
+                        <tr>
+                            <td>${customer.name}</td>
+                            <td>${customer.email}</td>
+                            <td>${customer.phoneNumber}</td>
+                            <td>${customer.totalSpending.toFixed(2)}</td>
+                        </tr>
+                    `;
+                customersBody.innerHTML += row;
+            });
+        } catch (error) {
+            console.error("Error fetching customers:", error);
+            document.getElementById('customersBody').innerHTML = '<tr><td colspan="4">Error fetching data.</td></tr>';
         }
     }
+
+    // Trigger search when input changes
+    document.getElementById('searchInput').addEventListener('input', searchCustomers);
+    document.getElementById('spendingInput').addEventListener('input', searchCustomers);
 </script>
