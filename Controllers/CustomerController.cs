@@ -4,6 +4,7 @@ using crms2.Customers.Queries;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Dapper;
+using System.Data.Common;
 namespace crsms.Controllers
 {
     [ApiController]
@@ -15,18 +16,20 @@ namespace crsms.Controllers
         private readonly LoadCustomerFile _loadCustomerFile;
         private readonly GetLoyaltyPoints _getLoyaltyPoints;
         private readonly GetFilteredCustomers _getFilteredCustomers;
+        private readonly GetCustomerSpending _getCustomerSpending;
 
-        public CustomersController(GetAllCustomers getAllCustomers, LoadCustomer loadCustomer, LoadCustomerFile loadfile, GetFilteredCustomers getFilteredCustomers)
+
+        public CustomersController(GetAllCustomers getAllCustomers, LoadCustomer loadCustomer, LoadCustomerFile loadfile, GetCustomerSpending getCustomerSpending)
         {
             _getAllCustomers = getAllCustomers;
             _loadCustomer = loadCustomer;
             _loadCustomerFile = loadfile;
-            _getFilteredCustomers = getFilteredCustomers;
+            _getCustomerSpending = getCustomerSpending;
         }
 
 
         [HttpGet("filtered")]
-        public async Task<IActionResult> GetFilteredCustomers([FromQuery] decimal? SpendingThreshold)
+        public async Task<IActionResult> GetFilteredCustomers([FromQuery] decimal SpendingThreshold)
         {
             try
             {
@@ -38,6 +41,8 @@ namespace crsms.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
         [HttpGet]
         public async Task<IActionResult> GetAllCustomers()
         {

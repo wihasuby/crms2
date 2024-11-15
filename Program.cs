@@ -1,4 +1,3 @@
-
 using crms2.Customers.Commands;
 using crms2.Customers.Queries;
 using crms2.PurchaseHistory.Commands;
@@ -15,16 +14,18 @@ namespace crms2
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
+            // Add services to the container
             builder.Services.AddControllersWithViews();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            builder.Services.AddRazorPages(); // Enable Razor Pages
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // Register SQLite connection
             builder.Services.AddTransient<IDbConnection>(sp => new SqliteConnection("Data Source=C:\\database\\crms.db"));
 
+            // Register application services
             builder.Services.AddTransient<GetAllCustomers>();
+            builder.Services.AddTransient<GetCustomerSpending>();
             builder.Services.AddTransient<GetMonthlyReport>();
             builder.Services.AddTransient<GetLoyaltyPoints>();
             builder.Services.AddTransient<LoadCustomer>();
@@ -33,17 +34,15 @@ namespace crms2
             builder.Services.AddTransient<GetAllPurchases>();
             builder.Services.AddTransient<GetFilteredCustomers>();
 
-
-
             var app = builder.Build();
 
-            //seeding the database with the csv file.
             // Seed the database with the CSV file
             try
             {
                 using var scope = app.Services.CreateScope();
                 var seeder = scope.ServiceProvider.GetRequiredService<LoadCustomer>();
-                //await seeder.LoadCustomersAsync("customers.csv");
+                // Uncomment the line below to seed data from the CSV file
+                // await seeder.LoadCustomersAsync("customers.csv");
             }
             catch (Exception ex)
             {
@@ -53,7 +52,7 @@ namespace crms2
 
             try
             {
-                // Configure the HTTP request pipeline.
+                // Configure the HTTP request pipeline
                 if (app.Environment.IsDevelopment())
                 {
                     app.UseSwagger();
@@ -61,11 +60,16 @@ namespace crms2
                 }
 
                 app.UseHttpsRedirection();
+                app.UseStaticFiles(); // Serve static files (e.g., CSS, JS)
+                app.UseRouting();
                 app.UseAuthorization();
+
+                // Map controllers and Razor Pages
                 app.MapControllers();
+                app.MapRazorPages(); // Ensure this line is present
                 app.MapDefaultControllerRoute();
 
-
+                // Run the application
                 app.Run();
             }
             catch (Exception ex)
@@ -76,3 +80,5 @@ namespace crms2
         }
     }
 }
+
+

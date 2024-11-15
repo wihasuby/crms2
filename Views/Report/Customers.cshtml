@@ -1,0 +1,56 @@
+﻿@model IEnumerable<crms2.Customers.Models.CustomerModel>
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<h2>Customers</h2>
+
+<!-- Search Input -->
+<div class="form-group">
+    <input type="text" id="searchInput" placeholder="Search by Name" class="form-control" onkeyup="filterCustomers()" />
+</div>
+
+<!-- Customers Table -->
+<table class="table table-striped" id="customersTable">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Total Spending</th>
+        </tr>
+    </thead>
+    <tbody id="customersBody">
+        @foreach (var customer in Model)
+        {
+            <tr>
+                <td class="customer-name">@customer.Name</td>
+                <td>@customer.Email</td>
+                <td>@customer.PhoneNumber</td>
+                <td>@customer.TotalSpending.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- JavaScript for Client-Side Filtering -->
+<script>
+    function filterCustomers() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const table = document.getElementById('customersTable');
+        const rows = table.getElementsByTagName('tr');
+
+        // Loop through all rows and hide those that don't match the search query
+        for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the table header
+            const nameCell = rows[i].getElementsByClassName('customer-name')[0];
+            if (nameCell) {
+                const name = nameCell.textContent || nameCell.innerText;
+                if (name.toLowerCase().indexOf(input) > -1) {
+                    rows[i].style.display = ''; // Show row
+                } else {
+                    rows[i].style.display = 'none'; // Hide row
+                }
+            }
+        }
+    }
+</script>

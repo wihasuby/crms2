@@ -12,18 +12,14 @@ public class GetFilteredCustomers
         _dbConnection = dbConnection;
     }
 
-    public async Task<IEnumerable<CustomerModel>> ExecuteAsync(decimal? spendingThreshold)
+    public async Task<IEnumerable<CustomerModel>> ExecuteAsync(decimal spendingThreshold)
     {
-        // Use DynamicParameters to pass the parameter
-        var parameters = new DynamicParameters();
-        parameters.Add("SpendingThreshold", spendingThreshold ?? 0m);
 
-        Console.WriteLine($"SpendingThreshold (parameter value): {parameters.Get<decimal>("SpendingThreshold")}");
 
         try
         {
             // Execute the query and let Dapper handle the mapping automatically
-            var result = await _dbConnection.QueryAsync<CustomerModel>(BuildQuery(), parameters);
+            var result = await _dbConnection.QueryAsync<CustomerModel>(BuildQuery(spendingThreshold));
             Console.WriteLine($"Query Result Count: {result.Count()}");
 
             // Log each customer result for debugging
@@ -41,7 +37,7 @@ public class GetFilteredCustomers
         }
     }
 
-    public string BuildQuery()
+    public string BuildQuery(decimal st)
     {
         var sb = new StringBuilder();
         sb.AppendLine("SELECT");
@@ -54,7 +50,7 @@ public class GetFilteredCustomers
         sb.AppendLine("FROM Customers c");
         sb.AppendLine("LEFT JOIN purchase_history ph ON c.Id = ph.CustomerId");
         sb.AppendLine("GROUP BY c.Id, c.Name, c.Email, c.phone_number, c.CreatedAt");
-        sb.AppendLine("HAVING COALESCE(SUM(ph.Total), 0) >= @SpendingThreshold");
+        sb.AppendLine($"HAVING SUM(ph.Total) >= {st}");
         sb.AppendLine("ORDER BY TotalSpending ASC;");
         return sb.ToString();
     }
