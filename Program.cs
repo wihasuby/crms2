@@ -3,7 +3,10 @@ using crms2.Customers.Queries;
 using crms2.PurchaseHistory.Commands;
 using crms2.PurchaseHistory.Queries;
 using crms2.Reports.Queries;
-using Microsoft.Data.Sqlite;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Npgsql;
 using System.Data;
 
 namespace crms2
@@ -16,15 +19,15 @@ namespace crms2
 
             // Add services to the container
             builder.Services.AddControllersWithViews();
-            builder.Services.AddRazorPages(); // Enable Razor Pages
+            builder.Services.AddRazorPages();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Register SQLite connection
-            // Use a relative path for the SQLite database file
-            var databasePath = Path.Combine(Directory.GetCurrentDirectory(), "crms.db"); 
-            builder.Services.AddTransient<IDbConnection>(sp => new SqliteConnection($"Data Source={databasePath}"));
-            Console.WriteLine($"Database path: {databasePath}");
+            // Register PostgreSQL connection
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            builder.Services.AddTransient<IDbConnection>(sp => new NpgsqlConnection(connectionString));
+
+            Console.WriteLine($"Using connection string: {connectionString}");
 
             // Register application services
             builder.Services.AddTransient<GetAllCustomers>();
@@ -37,24 +40,10 @@ namespace crms2
             builder.Services.AddTransient<GetAllPurchases>();
             builder.Services.AddTransient<GetFilteredCustomers>();
 
-            
-
-
             var app = builder.Build();
 
-            // Seed the database with the CSV file
-            try
-            {
-                using var scope = app.Services.CreateScope();
-                var seeder = scope.ServiceProvider.GetRequiredService<LoadCustomer>();
-                // Uncomment the line below to seed data from the CSV file
-                // await seeder.LoadCustomersAsync("customers.csv");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error during database seeding: {ex.Message}");
-                throw;
-            }
+            // Initialize the PostgreSQL database
+            //InitializeDatabase(connectionString);
 
             if (app.Environment.IsDevelopment())
             {
@@ -71,19 +60,16 @@ namespace crms2
                 }
 
                 app.UseHttpsRedirection();
-                app.UseStaticFiles(); // Serve static files (e.g., CSS, JS)
+                app.UseStaticFiles();
                 app.UseRouting();
                 app.UseAuthorization();
 
-                // Map controllers and Razor Pages
                 app.MapControllers();
-                app.MapRazorPages(); // Ensure this line is present
-                //app.MapDefaultControllerRoute();
+                app.MapRazorPages();
                 app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
 
-                // Run the application
                 app.Run();
             }
             catch (Exception ex)
@@ -92,7 +78,54 @@ namespace crms2
                 throw;
             }
         }
+
+        // Method to initialize the PostgreSQL database tables
+        //private static void InitializeDatabase(string connectionString)
+        //{
+        //    using var connection = new NpgsqlConnection(connectionString);
+        //    connection.Open();
+
+        //    var createCustomersTable = @"
+        //    CREATE TABLE IF NOT EXISTS customers (
+        //        id SERIAL PRIMARY KEY,
+        //        name TEXT NOT NULL,
+        //        email TEXT UNIQUE NOT NULL,
+        //        phone_number TEXT,
+        //        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        //    );";
+
+        //    var createPurchaseHistoryTable = @"
+        //    CREATE TABLE IF NOT EXISTS purchase_history (
+        //        id SERIAL PRIMARY KEY,
+        //        customer_id INTEGER,
+        //        purchasable TEXT NOT NULL,
+        //        price REAL NOT NULL,
+        //        quantity INTEGER NOT NULL,
+        //        total REAL GENERATED ALWAYS AS (price * quantity) STORED,
+        //        purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        //        FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+        //    );";
+
+
+        //    try
+        //    {
+        //        using var command = connection.CreateCommand();
+
+        //        // Create customers table
+        //        command.CommandText = createCustomersTable;
+        //        command.ExecuteNonQuery();
+
+        //        // Create purchase_history table
+        //        command.CommandText = createPurchaseHistoryTable;
+        //        command.ExecuteNonQuery();
+
+        //        Console.WriteLine("Database tables initialized successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error initializing database tables: {ex.Message}");
+        //        throw;
+        //    }
+        }
     }
-}
-
-
+//}
