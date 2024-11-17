@@ -16,17 +16,26 @@ namespace crms2.Customers.Queries
 
         public async Task<IEnumerable<CustomerModel>> ExecuteAsync(string nameFilter)
         {
-            // Use DynamicParameters to pass the @NameFilter parameter
             var parameters = new DynamicParameters();
-            parameters.Add("NameFilter", $"%{nameFilter}%");
+            string query;
+
+            if (string.IsNullOrEmpty(nameFilter))
+            {
+                // No filter, return all records
+                query = BuildQueryWithoutFilter();
+            }
+            else
+            {
+                // Use filter
+                parameters.Add("NameFilter", $"%{nameFilter}%");
+                query = BuildQueryWithFilter();
+            }
 
             try
             {
-                // Execute the query with parameters
-                var result = await _dbConnection.QueryAsync<CustomerModel>(BuildQuery(nameFilter), parameters);
+                var result = await _dbConnection.QueryAsync<CustomerModel>(query, parameters);
                 Console.WriteLine($"Query Result Count: {result.Count()}");
 
-                // Log the results for debugging
                 foreach (var customer in result)
                 {
                     Console.WriteLine($"Customer: {customer.Name}, PhoneNumber: {customer.PhoneNumber}, TotalSpending: {customer.TotalSpending}");
@@ -41,7 +50,8 @@ namespace crms2.Customers.Queries
             }
         }
 
-        public string BuildQuery(string filter)
+
+        public string BuildQueryWithoutFilter()
         {
             var sb = new StringBuilder();
             sb.AppendLine("SELECT");
@@ -49,14 +59,32 @@ namespace crms2.Customers.Queries
             sb.AppendLine("    c.Name,");
             sb.AppendLine("    c.Email,");
             sb.AppendLine("    c.phone_number AS PhoneNumber,");
-            sb.AppendLine("    c.CreatedAt,");
-            sb.AppendLine("    SUM(ph.total) As TotalSpending");
+            sb.AppendLine("    c.created_at,");
+            sb.AppendLine("    COALESCE(SUM(ph.total), 0) AS TotalSpending");
             sb.AppendLine("FROM Customers c");
-            sb.AppendLine("LEFT JOIN purchase_history ph ON c.Id = ph.CustomerId");
-            sb.AppendLine($"WHERE c.Name LIKE '{filter}%'");
+            sb.AppendLine("LEFT JOIN purchase_history ph ON c.Id = ph.customer_id");
             sb.AppendLine("GROUP BY c.Id");
             sb.AppendLine("ORDER BY c.Name ASC;");
             return sb.ToString();
         }
+
+        public string BuildQueryWithFilter()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("SELECT");
+            sb.AppendLine("    c.Id,");
+            sb.AppendLine("    c.Name,");
+            sb.AppendLine("    c.Email,");
+            sb.AppendLine("    c.phone_number AS PhoneNumber,");
+            sb.AppendLine("    c.created_at,");
+            sb.AppendLine("    COALESCE(SUM(ph.total), 0) AS TotalSpending");
+            sb.AppendLine("FROM Customers c");
+            sb.AppendLine("LEFT JOIN purchase_history ph ON c.Id = ph.customer_id");
+            sb.AppendLine("WHERE c.Name ILIKE @NameFilter");
+            sb.AppendLine("GROUP BY c.Id");
+            sb.AppendLine("ORDER BY c.Name ASC;");
+            return sb.ToString();
+        }
+
     }
 }

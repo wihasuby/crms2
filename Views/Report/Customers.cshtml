@@ -134,17 +134,13 @@
 
             let url;
 
-            // If both filters are empty, call the endpoint to get all customers
-            if (!nameFilter && spendingThreshold === '') {
-                url = `/api/customers`; // Calls the `GetAllCustomers` endpoint
-            }
-            // Use the "search" endpoint for name-based search
-            else if (nameFilter) {
-                url = `/api/customers/search?name=${encodeURIComponent(nameFilter)}`;
-            }
-            // Use the "spending" endpoint for spending-based search, ensuring spendingThreshold is not an empty string
-            else if (spendingThreshold !== '') {
+            // Determine which API endpoint to call based on the input fields
+            if (spendingThreshold !== '' && !isNaN(spendingThreshold)) {
+                // Call the spending filter API if the spending input is filled
                 url = `/api/customers/filtered?SpendingThreshold=${encodeURIComponent(spendingThreshold)}`;
+            } else {
+                // Call the name search API if the spending input is empty
+                url = `/api/customers/search?name=${encodeURIComponent(nameFilter)}`;
             }
 
             console.log(`Calling URL: ${url}`); // Debugging line to see which URL is being called
@@ -170,13 +166,13 @@
                 // Populate the table with customer data
                 customers.forEach(customer => {
                     const row = `
-                                            <tr>
-                                                <td>${customer.name || 'N/A'}</td>
-                                                <td>${customer.email || 'N/A'}</td>
-                                                <td>${customer.phoneNumber || 'N/A'}</td>
-                                                <td>${customer.totalSpending !== null ? customer.totalSpending.toFixed(2) : '0.00'}</td>
-                                            </tr>
-                                        `;
+                            <tr>
+                                <td>${customer.name || 'N/A'}</td>
+                                <td>${customer.email || 'N/A'}</td>
+                                <td>${customer.phoneNumber || 'N/A'}</td>
+                                <td>${customer.totalSpending !== null ? customer.totalSpending.toFixed(2) : '0.00'}</td>
+                            </tr>
+                        `;
                     customersBody.innerHTML += row;
                 });
             } catch (error) {
@@ -189,9 +185,10 @@
         document.getElementById('searchInput').addEventListener('input', searchCustomers);
         document.getElementById('spendingInput').addEventListener('input', searchCustomers);
 
-        // Initial load of customers
-        searchCustomers();
+        // Initial load of customers using the search endpoint
+        document.addEventListener('DOMContentLoaded', searchCustomers);
     </script>
+
 
 </body>
 </html>
