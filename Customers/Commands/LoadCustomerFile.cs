@@ -62,7 +62,8 @@ namespace crms2.Customers.Commands
             {
                 if (validCustomers.Any())
                 {
-                    var query = "INSERT INTO Customers (Name, Email, phone_number, CreatedAt) VALUES (@Name, @Email, @PhoneNumber, @CreatedAt)";
+                    var query = "INSERT INTO Customers (name, email, phone_number, created_at) VALUES (@Name, @Email, @PhoneNumber, @CreatedAt)";
+
                     await _dbConnection.ExecuteAsync(query, validCustomers);
                 }
             }

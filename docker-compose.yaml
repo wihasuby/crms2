@@ -5,16 +5,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: counter-image:latest
+    image: crms2-image:latest
     ports:
       - "8080:8080"
+      - "8081:8081"
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: mydatabase
-      CONNECTION_STRING: Host=db;Database=mydatabase;Username=myuser;Password=mypassword
+      CONNECTION_STRING: Host=db;Port=5432;Database=mydatabase;Username=myuser;Password=mypassword
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - crms2-network
 
   db:
     image: postgres:latest
@@ -27,6 +33,16 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crms2-network
 
 volumes:
   postgres_data:
+
+networks:
+  crms2-network:

@@ -90,8 +90,9 @@ namespace crms2.PurchaseHistory.Commands
                 if (validPurchases.Any())
                 {
                     var insertQuery = @"
-                        INSERT INTO purchase_history (CustomerId, Purchasable, Price, Quantity, PurchaseDate)
-                        VALUES (@CustomerId, @Purchasable, @Price, @Quantity, @PurchaseDate)";
+                    INSERT INTO purchase_history (customer_id, purchasable, price, quantity, purchase_date)
+                    VALUES (@CustomerId, @Purchasable, @Price, @Quantity, @PurchaseDate)";
+
                     await _dbConnection.ExecuteAsync(insertQuery, validPurchases);
                     _logger.LogInformation($"Successfully inserted {validPurchases.Count} purchase records.");
                 }

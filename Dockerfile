@@ -2,7 +2,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
 # Switch to root user to set permissions
 USER root
@@ -12,7 +11,6 @@ RUN mkdir -p /app/wwwroot/uploads && chmod -R 777 /app/wwwroot/uploads
 
 # Ensure the uploads directory is owned by the app user
 RUN mkdir -p /app/wwwroot/uploads && chown -R app:app /app/wwwroot/uploads && chmod -R 777 /app/wwwroot/uploads
-
 
 # Copy CSV files and set permissions
 COPY wwwroot/uploads/customers.csv /app/wwwroot/uploads/customers.csv
@@ -26,12 +24,15 @@ RUN chown app:app /app/crms.db && chmod 666 /app/crms.db
 # Switch back to non-root user
 USER app
 
+# Set the ASP.NET Core URL environment variable
+ENV ASPNETCORE_URLS=http://+:8080
+
 # Build Stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["crms2.csproj", "."]
-RUN dotnet restore "./././crms2.csproj"
+RUN dotnet restore "./crms2.csproj"
 COPY . .
 WORKDIR "/src/."
 RUN dotnet build "./crms2.csproj" -c $BUILD_CONFIGURATION -o /app/build
