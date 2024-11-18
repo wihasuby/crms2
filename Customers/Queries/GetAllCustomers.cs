@@ -28,15 +28,16 @@ namespace crms2.Customers.Queries
             sb.AppendLine("    c.Name,");
             sb.AppendLine("    c.Email,");
             sb.AppendLine("    c.phone_number AS PhoneNumber,");
-            sb.AppendLine("    c.CreatedAt,");
+            sb.AppendLine("    c.created_at,");
             sb.AppendLine("    COALESCE(SUM(ph.Total), 0) AS TotalSpending");
             sb.AppendLine("FROM Customers c");
-            sb.AppendLine("LEFT JOIN purchase_history ph ON c.Id = ph.CustomerId");
-            sb.AppendLine("GROUP BY c.Id, c.Name, c.Email, c.phone_number, c.CreatedAt");
+            sb.AppendLine("LEFT JOIN purchase_history ph ON c.Id = ph.customer_id");
+            sb.AppendLine("GROUP BY c.Id, c.Name, c.Email, c.phone_number, c.created_at");
             sb.AppendLine("ORDER BY TotalSpending ASC;");
-            return sb.ToString();
+
 
             return sb.ToString();
+
         }
 
     }

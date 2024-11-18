@@ -1,5 +1,4 @@
 -- Drop deprecated table
-DROP TABLE IF EXISTS purchasehistory;
 DROP TABLE IF EXISTS purchase_history;
 DROP TABLE IF EXISTS customers;
 

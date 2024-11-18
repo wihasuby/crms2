@@ -27,16 +27,11 @@ namespace crms2.Customers.Queries
                 var purchasesQuery = @"
                     SELECT *
                     FROM purchase_history
-                    WHERE CustomerId = @CustomerId
-                      AND PurchaseDate >= '2022-01-01'";
+                    WHERE customer_id = @CustomerId
+                      AND purchase_date >= '2022-01-01'";
 
                 var purchases = await _dbConnection.QueryAsync<PurchaseHistoryModel>(purchasesQuery, new { CustomerId = cust.Id });
                 int purchaseCounter = 0;
-
-                if (cust.Id == 16)
-                {
-                    Console.WriteLine("test");
-                }
                
                 //Calculation of loyalty points. 
 
