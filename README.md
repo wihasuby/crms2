@@ -1,5 +1,5 @@
 # CRM System Project
-# There are lots of extra files in this repo because I was initially using sqlite for my database and switched to postgresql due to some weird errors I was getting in the docker container that I attributed to being Sqlite's fault. The only real important files are the docker-compose.yaml and the init.sql
+## There are some extra files in this repo because I was initially using sqlite for my database and switched to postgresql due to some weird errors I was getting in the docker container that I attributed to being Sqlite's fault. The only real important files are the docker-compose.yaml and the init.sql
 ## Prerequisites
 
 - .NET 8 SDK (or higher) (only if you are running it with dotnet will you need this)
