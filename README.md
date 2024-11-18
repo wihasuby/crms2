@@ -13,5 +13,6 @@
    git clone https://github.com/yourusername/crms2.git
 2. Download Docker if you don't have it
 3. `Docker-compose build` then `Docker-compose up -d`.
+4. navigate to localhost:8080
 
    
