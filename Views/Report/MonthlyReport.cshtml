@@ -71,7 +71,7 @@
                     <tr>
                         <td class="compact">@item.Year</td>
                         <td class="compact">@item.Month</td>
-                        <td class="compact">@item.AverageSpend.ToString("C")</td>
+                        <td class="compact">$@item.AverageSpend.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)</td>
                         <td class="compact">@item.TotalLoyaltyPoints</td>
                     </tr>
                 }
